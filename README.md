@@ -6,7 +6,7 @@ A simple rendering engine in early stage of development.
 - [ ] Supported platforms
   - [x] Windows 10
 - [ ] Rendering APIs
-  - [x] OpenGL
+  - [ ] OpenGL (in development)
 - [ ] Application Framework
   - [x] Entry point
   - [x] Logging
