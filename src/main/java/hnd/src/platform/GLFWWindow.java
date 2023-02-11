@@ -54,7 +54,6 @@ public class GLFWWindow extends Window {
 		if (glfwWindowCount == 0) {
 			if (!GLFW.glfwInit()) {
 				Logger.error("Couldn't initialize GLFW!");
-				System.exit(-1);
 			}
 			GLFW.glfwSetErrorCallback(GLFWWindow::glfwErrorCallback);
 		}

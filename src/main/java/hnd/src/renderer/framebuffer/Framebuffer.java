@@ -26,5 +26,5 @@ public abstract class Framebuffer {
 
 	public abstract int getSpecification();
 
-	public abstract int getColorAttachmentRendererID();
+	public abstract int getTextureID();
 }

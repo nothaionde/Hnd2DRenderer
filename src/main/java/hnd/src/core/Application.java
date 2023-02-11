@@ -38,7 +38,6 @@ public abstract class Application {
 			instance = this;
 		} else {
 			Logger.error("Application already exists!");
-			System.exit(-1);
 		}
 		window = Window.create(new Window.WindowProps("Hnd"));
 		Renderer.init();
