@@ -24,7 +24,9 @@ public abstract class Framebuffer {
 
 	public abstract void unbind();
 
-	public abstract int getSpecification();
+	public abstract FramebufferSpecification getSpecification();
 
 	public abstract int getTextureID();
+
+	public abstract void resize(int width, int height);
 }

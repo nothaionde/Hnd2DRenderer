@@ -7,8 +7,6 @@ import hnd.src.events.Event;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImGuiStyle;
-import imgui.ImVec2;
-import imgui.extension.imguizmo.ImGuizmo;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
@@ -24,7 +22,7 @@ public class ImGuiLayer extends Layer {
 	private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
 
 	/**
-	 * Set up color theme for ImGui
+	 * Sets up color theme for ImGui
 	 */
 	public static void setColors(Theme theme) {
 		switch (theme) {
@@ -92,9 +90,7 @@ public class ImGuiLayer extends Layer {
 	 */
 	public void begin() {
 		imGuiImplGlfw.newFrame();
-		imGuiImplGl3.init();
 		ImGui.newFrame();
-		ImGuizmo.beginFrame();
 	}
 
 	/**
@@ -103,7 +99,7 @@ public class ImGuiLayer extends Layer {
 	public void end() {
 		ImGuiIO io = ImGui.getIO();
 		Application application = Application.getInstance();
-		io.getDisplaySize(new ImVec2(application.getWindow().getWidth(), application.getWindow().getHeight()));
+		io.setDisplaySize(application.getWindow().getWidth(), application.getWindow().getHeight());
 
 		// Rendering
 		ImGui.render();
@@ -124,10 +120,9 @@ public class ImGuiLayer extends Layer {
 		io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);       // Enable Keyboard Controls
 		io.addConfigFlags(ImGuiConfigFlags.DockingEnable);           // Enable Docking
 		io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);         // Enable Multi-Viewport / Platform Windows
-		ImGui.styleColorsDark();
 
-		ImGuiStyle style = ImGui.getStyle();
 		if (io.hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
+			ImGuiStyle style = ImGui.getStyle();
 			style.setWindowRounding(0.0f);
 			float[][] colors = style.getColors();
 			colors[ImGuiCol.WindowBg][3] = 1.0f;
@@ -147,6 +142,7 @@ public class ImGuiLayer extends Layer {
 	public void onDetach() {
 		imGuiImplGl3.dispose();
 		imGuiImplGlfw.dispose();
+		ImGui.destroyContext();
 	}
 
 	@Override

@@ -1,9 +1,8 @@
-package hnd.src.platform;
+package hnd.src.platform.windows;
 
 import hnd.src.core.Logger;
 import hnd.src.core.Window;
 import hnd.src.events.ApplicationEvent;
-import hnd.src.events.Event;
 import hnd.src.events.KeyEvent;
 import hnd.src.events.MouseEvent;
 import hnd.src.renderer.GraphicsContext;
@@ -11,8 +10,7 @@ import hnd.src.renderer.Renderer;
 import hnd.src.renderer.RendererAPI;
 import hnd.src.utils.Constants;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.Queue;
+import org.lwjgl.system.MemoryUtil;
 
 
 /**
@@ -20,10 +18,8 @@ import java.util.Queue;
  */
 public class GLFWWindow extends Window {
 
-	public static int glfwWindowCount = 0;
-	private WindowData data;
-	private long windowPtr;
-	private GraphicsContext context;
+	private static long windowPtr;
+	private static GraphicsContext context;
 
 	public GLFWWindow(WindowProps windowProps) {
 		init(windowProps);
@@ -36,7 +32,7 @@ public class GLFWWindow extends Window {
 	 * @param description a pointer to a UTF-8 encoded string describing the error.
 	 */
 	private static void glfwErrorCallback(int error, long description) {
-		System.out.println(description);
+		Logger.error("Error code: " + error + ", msg: " + MemoryUtil.memUTF8(description));
 	}
 
 	/**
@@ -45,25 +41,21 @@ public class GLFWWindow extends Window {
 	 *
 	 * @param windowProps {@link hnd.src.core.Window.WindowProps} window properties.
 	 */
-	private void init(WindowProps windowProps) {
-		data = new WindowData();
-		data.title = windowProps.title;
-		data.width = windowProps.width;
-		data.height = windowProps.height;
+	private static void init(WindowProps windowProps) {
+		WindowData.title = windowProps.title;
+		WindowData.width = windowProps.width;
+		WindowData.height = windowProps.height;
 		Logger.info("Creating window: " + windowProps.title + " (" + windowProps.width + ", " + windowProps.height + ")");
-		if (glfwWindowCount == 0) {
-			if (!GLFW.glfwInit()) {
-				Logger.error("Couldn't initialize GLFW!");
-			}
-			GLFW.glfwSetErrorCallback(GLFWWindow::glfwErrorCallback);
+		if (!GLFW.glfwInit()) {
+			Logger.error("Couldn't initialize GLFW!");
 		}
+		GLFW.glfwSetErrorCallback(GLFWWindow::glfwErrorCallback);
 		if (Constants.DEBUG) {
 			if (Renderer.getAPI() == RendererAPI.API.OPENGL) {
 				GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
 			}
 		}
-		windowPtr = GLFW.glfwCreateWindow(windowProps.width, windowProps.height, data.title, 0L, 0L);
-		glfwWindowCount++;
+		windowPtr = GLFW.glfwCreateWindow(windowProps.width, windowProps.height, WindowData.title, 0L, 0L);
 		context = GraphicsContext.create(windowPtr);
 		context.init();
 		setVSync(true);
@@ -73,7 +65,7 @@ public class GLFWWindow extends Window {
 	/**
 	 * Sets the callbacks for the specified window.
 	 */
-	private void setGLFWCallbacks() {
+	private static void setGLFWCallbacks() {
 		GLFW.glfwSetWindowSizeCallback(windowPtr, ApplicationEvent::windowSizeCallback);
 		GLFW.glfwSetWindowCloseCallback(windowPtr, ApplicationEvent::windowCloseEvent);
 		GLFW.glfwSetKeyCallback(windowPtr, KeyEvent::keyCallbackEvent);
@@ -88,7 +80,7 @@ public class GLFWWindow extends Window {
 	 *
 	 * @param enabled true to set VSync
 	 */
-	private void setVSync(boolean enabled) {
+	private static void setVSync(boolean enabled) {
 		if (enabled) {
 			GLFW.glfwSwapInterval(1);
 		} else {
@@ -144,13 +136,8 @@ public class GLFWWindow extends Window {
 		public static int width;
 		public static int height;
 		public static boolean vSync;
-		private static Queue<Event> eventQueue;
 
 		private WindowData() {
-		}
-
-		public static <T> void eventCallback(T event) {
-			eventQueue.add((Event) event);
 		}
 	}
 

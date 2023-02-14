@@ -17,15 +17,12 @@ public abstract class RendererAPI {
 		switch (api) {
 			case NONE: {
 				Logger.error("RendererAPI.None is currently not supported!");
-				System.exit(-1);
-				break;
+				return null;
 			}
 			case OPENGL:
 				return new OpenGLRendererAPI();
 		}
 		Logger.error("Unknown RendererAPI!");
-		System.exit(-1);
-		// Unreachable return option!
 		return null;
 	}
 

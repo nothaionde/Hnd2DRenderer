@@ -9,14 +9,11 @@ public abstract class GraphicsContext {
 		switch (Renderer.getAPI()) {
 			case NONE:
 				Logger.error("RendererAPI.NONE is currently not supported!");
-				System.exit(-1);
-				break;
+				return null;
 			case OPENGL:
 				return new OpenGLContext(windowPtr);
 		}
 		Logger.error("Unknown RendererAPI!");
-		System.exit(-1);
-		// Unreachable return option!
 		return null;
 	}
 

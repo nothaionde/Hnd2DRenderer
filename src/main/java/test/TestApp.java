@@ -1,19 +1,18 @@
-package hndrelease.src;
+package test;
 
 import hnd.src.core.Application;
 import hnd.src.core.ApplicationSpecification;
 
-public class HndRelease extends Application {
-
-	public HndRelease(String[] args) {
+public class TestApp extends Application {
+	public TestApp(String[] args) {
 		super(args);
-		pushLayer(new ReleaseLayer());
+		pushLayer(new TestLayer());
 	}
 
 	public static Application createApplication(String[] args) {
 		ApplicationSpecification spec = new ApplicationSpecification();
-		spec.name = "Hnd Editor";
+		spec.name = "Test app";
 		spec.commandLineArgs = args;
-		return new HndRelease(args);
+		return new TestApp(args);
 	}
 }

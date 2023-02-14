@@ -1,7 +1,7 @@
 package hnd.src.core;
 
 
-import hnd.src.platform.GLFWWindow;
+import hnd.src.platform.windows.GLFWWindow;
 
 /**
  * Abstract class that contains main window creation and update logic.

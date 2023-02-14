@@ -7,6 +7,7 @@ import imgui.type.ImBoolean;
 public class SceneRenderer {
 
 	private ImBoolean showPhysicsColliders = new ImBoolean(false);
+	private ImBoolean showDemoWindows = new ImBoolean(false);
 
 	public SceneRenderer() {
 	}
@@ -23,7 +24,11 @@ public class SceneRenderer {
 
 		ImGui.begin("Settings");
 		ImGui.checkbox("Show physics colliders", showPhysicsColliders);
+		ImGui.checkbox("Show demo window", showDemoWindows);
 		ImGui.end();
+	}
 
+	public ImBoolean getShowDemoWindow() {
+		return showDemoWindows;
 	}
 }

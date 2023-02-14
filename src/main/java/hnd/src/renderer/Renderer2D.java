@@ -4,6 +4,7 @@ package hnd.src.renderer;
 public class Renderer2D {
 
 	public static void init() {
+		// Quad vertex array initialization
 	}
 
 

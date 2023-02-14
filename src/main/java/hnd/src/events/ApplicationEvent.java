@@ -1,7 +1,7 @@
 package hnd.src.events;
 
 import hnd.src.core.Application;
-import hnd.src.platform.GLFWWindow;
+import hnd.src.platform.windows.GLFWWindow;
 
 /**
  * Application event handler

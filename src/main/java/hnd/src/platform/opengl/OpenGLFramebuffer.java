@@ -70,12 +70,19 @@ public class OpenGLFramebuffer extends Framebuffer {
 	}
 
 	@Override
-	public int getSpecification() {
-		return rendererID[0];
+	public FramebufferSpecification getSpecification() {
+		return specification;
 	}
 
 	@Override
 	public int getTextureID() {
 		return textureIDs[0];
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		// TODO check for width or height == 0 or more than maxframebuffersize
+		specification.width = width;
+		specification.height = height;
 	}
 }

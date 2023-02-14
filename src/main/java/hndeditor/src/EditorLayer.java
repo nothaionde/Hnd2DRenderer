@@ -5,7 +5,10 @@ import hnd.src.core.Layer;
 import hnd.src.events.Event;
 import hnd.src.imgui.ImGuiLayer;
 import hnd.src.platform.windows.WindowsPlatformUtils;
+import hnd.src.renderer.EditorCamera;
+import hnd.src.renderer.OrthographicCameraController;
 import hnd.src.renderer.RenderCommand;
+import hnd.src.renderer.Renderer2D;
 import hnd.src.renderer.framebuffer.Framebuffer;
 import hnd.src.renderer.framebuffer.FramebufferSpecification;
 import hnd.src.scene.Scene;
@@ -19,56 +22,30 @@ import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 
 
 public class EditorLayer extends Layer {
-	int[] vertexArray = {0};
-	int[] vertexBuffer = {0};
-	int[] indexBuffer = {0};
+	private final Vector4f clearColor = new Vector4f(0.1f, 0.1f, 0.1f, 1);
 	private Framebuffer framebuffer;
+	private EditorCamera editorCamera;
+	private OrthographicCameraController cameraController;
 	private Scene activeScene;
 	private Scene editorScene;
 	private SceneHierarchyPanel sceneHierarchyPanel;
 	private ContentBrowserPanel contentBrowserPanel;
 	private SceneRenderer sceneRenderer;
-	private Vector4f clearColor = new Vector4f(0.1f, 0.1f, 0.1f, 1);
 	private ImVec2 viewportSize;
 	private ImVec2[] viewportBounds;
 	private String editorScenePath;
+	private boolean viewportFocused;
+
+
+	public EditorLayer() {
+		cameraController = new OrthographicCameraController(1280.0f / 720.0f);
+	}
 
 	@Override
 	public void onAttach() {
-		// Vertex Array
-		GL30.glGenVertexArrays(vertexArray);
-		GL30.glBindVertexArray(vertexArray[0]);
-		// Vertex Buffer
-		GL15.glGenBuffers(vertexBuffer);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBuffer[0]);
-
-		float[] vertices = {
-				-0.5f, -0.5f, 0.0f,
-				0.5f, -0.5f, 0.0f,
-				0.0f, 0.5f, 0.0f,
-		};
-		// Upload data to GPU
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STATIC_DRAW);
-
-		GL20.glEnableVertexAttribArray(0);
-		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, Float.BYTES * 3, 0);
-
-		// Index Buffer
-		GL15.glGenBuffers(indexBuffer);
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indexBuffer[0]);
-
-		int[] indices = {
-				0, 1, 2
-		};
-		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indices, GL15.GL_STATIC_DRAW);
-
 		FramebufferSpecification framebufferSpecification = new FramebufferSpecification();
 		framebufferSpecification.width = 1280;
 		framebufferSpecification.height = 720;
@@ -77,6 +54,8 @@ public class EditorLayer extends Layer {
 
 		editorScene = new Scene();
 		activeScene = editorScene;
+
+		editorCamera = new EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
 		sceneHierarchyPanel = new SceneHierarchyPanel();
 		contentBrowserPanel = new ContentBrowserPanel();
@@ -92,17 +71,30 @@ public class EditorLayer extends Layer {
 
 	@Override
 	public void onUpdate(float ts) {
+		// Resize
+		if (viewportSize.x > 0.0f && viewportSize.y > 0.0f && // zero framebuffer is invalid
+				(framebuffer.getSpecification().width != viewportSize.x || framebuffer.getSpecification().height != viewportSize.y)) {
+			framebuffer.resize((int) viewportSize.x, (int) viewportSize.y);
+			cameraController.onResize(viewportSize.x, viewportSize.y);
+			editorCamera.setViewportSize(viewportSize.x, viewportSize.y);
+		}
 		framebuffer.bind();
 		RenderCommand.setClearColor(clearColor);
 		RenderCommand.clear();
+		if (viewportFocused) {
+			cameraController.onUpdate(ts);
+		}
+		editorCamera.onUpdate(ts);
 
-		GL30.glBindVertexArray(vertexArray[0]);
-		GL11.glDrawElements(GL11.GL_TRIANGLES, 3, GL11.GL_UNSIGNED_INT, 0);
+
 		framebuffer.unbind();
 	}
 
 	@Override
 	public void onImGuiRender() {
+		if (sceneRenderer.getShowDemoWindow().get()) {
+			ImGui.showDemoWindow();
+		}
 		// Note: Switch this to true to enable dockspace
 		ImBoolean dockspaceOpen = new ImBoolean(true);
 		boolean optFullscreen = true;
@@ -111,8 +103,8 @@ public class EditorLayer extends Layer {
 		int windowFlags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking;
 		if (optFullscreen) {
 			ImGuiViewport viewport = ImGui.getMainViewport();
-			ImGui.setNextWindowPos(viewport.getPos().x, viewport.getPos().y);
-			ImGui.setNextWindowSize(viewport.getSize().x, viewport.getSize().y);
+			ImGui.setNextWindowPos(viewport.getPosX(), viewport.getPosY());
+			ImGui.setNextWindowSize(viewport.getSizeX(), viewport.getSizeY());
 			ImGui.setNextWindowViewport(viewport.getID());
 			ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
 			ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
@@ -138,7 +130,7 @@ public class EditorLayer extends Layer {
 		ImGuiIO io = ImGui.getIO();
 		ImGuiStyle style = ImGui.getStyle();
 		float minWinSizeX = style.getWindowMinSizeX();
-		style.setWindowMinSize(370.0f, 1);
+		style.setWindowMinSize(100, 100);
 		if (io.hasConfigFlags(ImGuiConfigFlags.DockingEnable)) {
 			long dockspaceID = ImGui.getID("MyDockspace");
 			ImGui.dockSpace((int) dockspaceID, 0.0f, 0.0f, dockspaceFlags);
@@ -185,6 +177,7 @@ public class EditorLayer extends Layer {
 		sceneRenderer.onImGuiRender();
 
 		ImGui.begin("Viewport");
+		viewportFocused = ImGui.isWindowFocused();
 		viewportSize = ImGui.getContentRegionAvail();
 		int textureID = framebuffer.getTextureID();
 		ImGui.image(textureID, viewportSize.x, viewportSize.y, 0, 1, 1, 0);

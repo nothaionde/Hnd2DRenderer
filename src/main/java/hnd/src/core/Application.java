@@ -5,9 +5,8 @@ import hnd.src.events.ApplicationEvent;
 import hnd.src.events.Event;
 import hnd.src.imgui.ImGuiLayer;
 import hnd.src.renderer.Renderer;
-import hnd.src.utils.Constants;
 import hndeditor.src.HndEditor;
-import hndrelease.src.HndRelease;
+import test.TestApp;
 
 /**
  * Main application singleton.
@@ -54,11 +53,8 @@ public abstract class Application {
 	}
 
 	public static Application createApplication(String[] args) {
-		if (Constants.RELEASE) {
-			return HndRelease.createApplication(args);
-		} else {
-			return HndEditor.createApplication(args);
-		}
+//		return HndEditor.createApplication(args);
+		return TestApp.createApplication(args);
 	}
 
 	public Window getWindow() {
