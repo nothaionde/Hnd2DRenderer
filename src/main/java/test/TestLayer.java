@@ -6,12 +6,14 @@ import hnd.src.renderer.OrthographicCameraController;
 import hnd.src.renderer.Shader;
 import hnd.src.renderer.Texture2D;
 import hnd.src.renderer.vertex.Vertex;
+import imgui.ImGui;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 
@@ -117,8 +119,8 @@ public class TestLayer extends Layer {
 
 		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(quadSize * maxQuadCount);
 		int indexCount = 0;
-		for (int y = 0; y < 20; y++) {
-			for (int x = 0; x < 20; x++) {
+		for (int y = 0; y < 2; y++) {
+			for (int x = 0; x < 2; x++) {
 				FloatBuffer b1 = createQuad(x, y, 0);
 				verticesBuffer.put(b1);
 				indexCount += 6;
@@ -184,6 +186,7 @@ public class TestLayer extends Layer {
 
 	@Override
 	public void onImGuiRender() {
+		ImGui.showDemoWindow();
 	}
 
 	@Override

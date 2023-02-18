@@ -20,10 +20,10 @@ public abstract class Application {
 	 * Singleton holder
 	 */
 	private static Application instance;
-	private Window window;
+	private final Window window;
 	private boolean running = true;
-	private ImGuiLayer imGuiLayer;
-	private LayerStack layerStack = new LayerStack();
+	private final ImGuiLayer imGuiLayer;
+	private final LayerStack layerStack = new LayerStack();
 	private float lastFrameTime = 0.0f;
 	private boolean minimized = false;
 
@@ -53,8 +53,8 @@ public abstract class Application {
 	}
 
 	public static Application createApplication(String[] args) {
-//		return HndEditor.createApplication(args);
-		return TestApp.createApplication(args);
+		return HndEditor.createApplication(args);
+//		return TestApp.createApplication(args);
 	}
 
 	public Window getWindow() {
@@ -67,7 +67,6 @@ public abstract class Application {
 	}
 
 	public void onEvent(Event e) {
-
 		if (e instanceof ApplicationEvent.WindowResizeEvent windowResizeEvent) {
 			onWindowResize(windowResizeEvent);
 		}
@@ -116,6 +115,7 @@ public abstract class Application {
 
 	public void close() {
 		running = false;
+		window.dispose();
 	}
 
 	public ImGuiLayer getImGuiLayer() {

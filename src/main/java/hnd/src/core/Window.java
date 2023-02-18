@@ -20,6 +20,8 @@ public abstract class Window {
 
 	public abstract int getHeight();
 
+	public abstract void dispose();
+
 
 	public static class WindowProps {
 		public String title;

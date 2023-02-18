@@ -4,6 +4,8 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.nio.FloatBuffer;
+
 public class Vertex {
 	public Vector3f position = new Vector3f();
 	public Vector4f color = new Vector4f();
@@ -11,7 +13,7 @@ public class Vertex {
 	public float texID;
 
 	// Size of Vertex buffer: position = 3 + color = 4 + texCoords = 2 + texID = 1;
-	private int size = 10 * Float.BYTES;
+	private final int size = 10 * Float.BYTES;
 
 	public int size() {
 		return size;

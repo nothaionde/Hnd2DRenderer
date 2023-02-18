@@ -38,7 +38,9 @@ public abstract class RendererAPI {
 
 	public abstract void setLineWidth(float width);
 
-	public enum API {
+	public abstract void drawIndexed(VertexArray vertexArray, int indexCount);
+
+    public enum API {
 		NONE,
 		OPENGL,
 	}
