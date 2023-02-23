@@ -18,7 +18,7 @@ void main()
     v_Color = a_Color;
     v_TexCoords = a_TexCoords;
     v_TexIndex = a_TexIndex;
-    gl_Position = u_ViewProj * u_Transform * vec4(a_Position, 1.0);
+    gl_Position = u_ViewProj * vec4(a_Position, 1.0);
 }
 
 #type fragment
@@ -35,5 +35,5 @@ uniform sampler2D u_Textures[2];
 void main()
 {
     int index = int(v_TexIndex);
-    o_Color = texture(u_Textures[index], v_TexCoords);
+    o_Color = v_Color;
 }

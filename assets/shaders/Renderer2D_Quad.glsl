@@ -8,10 +8,12 @@ layout(location = 3) in float a_TexIndex;
 layout(location = 4) in float a_TilingFactor;
 layout(location = 5) in int a_EntityID;
 
-layout(std140, binding = 0) uniform Camera
-{
-	mat4 u_ViewProjection;
-};
+uniform mat4 u_ViewProjection;
+
+//layout(std140, binding = 0) uniform Camera
+//{
+//	mat4 u_ViewProjection;
+//};
 
 struct VertexOutput
 {
@@ -38,8 +40,8 @@ void main()
 #type fragment
 #version 450 core
 
-layout(location = 0) out vec4 o_Color;
-layout(location = 1) out int o_EntityID;
+layout(location = 0) out vec4 color;
+layout(location = 1) out int color2;
 
 struct VertexOutput
 {
@@ -93,10 +95,7 @@ void main()
 		case 30: texColor *= texture(u_Textures[30], Input.TexCoord * Input.TilingFactor); break;
 		case 31: texColor *= texture(u_Textures[31], Input.TexCoord * Input.TilingFactor); break;
 	}
+	color = texColor;
 
-	if (texColor.a == 0.0)
-		discard;
-
-	o_Color = texColor;
-	o_EntityID = v_EntityID;
+	color2 = v_EntityID;
 }

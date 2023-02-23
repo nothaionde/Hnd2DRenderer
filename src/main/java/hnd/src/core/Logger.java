@@ -3,7 +3,7 @@ package hnd.src.core;
 
 /**
  * Logger for the application.
- * // TODO add logger
+ * // TODO add log to content browser panel and remove sout logging
  */
 
 public class Logger {

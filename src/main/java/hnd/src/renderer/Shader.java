@@ -3,6 +3,7 @@ package hnd.src.renderer;
 import hnd.src.core.Logger;
 import hnd.src.platform.opengl.OpenGLShader;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 public abstract class Shader {
 	public static Shader create(String filepath) {
@@ -21,9 +22,10 @@ public abstract class Shader {
 
 	public abstract void bind();
 
-	public abstract void setMat4(String name, Matrix4f value);
 
 	public abstract void setUniformMat4(String name, Matrix4f matrix);
 
 	public abstract void uploadUniformIntArray(String name, int[] values);
+
+	public abstract void setFloat4(String name, Vector4f value);
 }

@@ -39,7 +39,6 @@ public class EditorLayer extends Layer {
     private String editorScenePath;
     private boolean viewportFocused;
 
-
     public EditorLayer() {
         cameraController = new OrthographicCameraController(1280.0f / 720.0f);
     }

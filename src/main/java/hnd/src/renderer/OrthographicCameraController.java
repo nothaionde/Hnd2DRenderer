@@ -1,5 +1,6 @@
 package hnd.src.renderer;
 
+import hnd.src.core.Logger;
 import hnd.src.platform.windows.WindowsInput;
 import org.joml.Math;
 import org.joml.Vector3f;
@@ -9,12 +10,12 @@ public class OrthographicCameraController {
 
 	private float cameraRotation = 0.0f; //In degrees, in the anti-clockwise direction
 	private float cameraTranslationSpeed = 5.0f;
-	private float cameraRotationSpeed = 180.0f;
+	private final float cameraRotationSpeed = 180.0f;
 	private float aspectRatio;
-	private float zoomLevel = 1.0f;
-	private OrthographicCamera camera;
-	private boolean rotation;
-	private Vector3f cameraPosition = new Vector3f(0.0f, 0.0f, 0.0f);
+	private final float zoomLevel = 1.0f;
+	private final OrthographicCamera camera;
+	private final boolean rotation;
+	private final Vector3f cameraPosition = new Vector3f(0.0f, 0.0f, 0.0f);
 
 	public OrthographicCameraController(float aspectRatio) {
 		this.aspectRatio = aspectRatio;
