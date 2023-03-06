@@ -10,11 +10,6 @@ layout(location = 5) in int a_EntityID;
 
 uniform mat4 u_ViewProjection;
 
-//layout(std140, binding = 0) uniform Camera
-//{
-//	mat4 u_ViewProjection;
-//};
-
 struct VertexOutput
 {
 	vec4 Color;

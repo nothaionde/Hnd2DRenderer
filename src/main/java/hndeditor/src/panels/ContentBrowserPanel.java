@@ -15,7 +15,7 @@ public class ContentBrowserPanel {
     private final Texture2D fileIcon;
     private Path currentDirectory;
     private final Path assetPath = Paths.get("assets"); // "assets"
-    private final StringPayload payload = new StringPayload();
+    protected static final StringPayload payload = new StringPayload();
 
     public ContentBrowserPanel() {
         currentDirectory = assetPath;
@@ -51,9 +51,9 @@ public class ContentBrowserPanel {
             Texture2D icon = file.isDirectory() ? directoryIcon : fileIcon;
             ImGui.pushStyleColor(ImGuiCol.Button, 0.0f, 0.0f, 0.0f, 0.0f);
             ImGui.imageButton(icon.getRendererID(), thumbnailSize[0], thumbnailSize[0], 0.0f, 1.0f, 1.0f, 0.0f);
-            payload.file = file;
             if (ImGui.beginDragDropSource()) {
                 ImGui.setDragDropPayload("CONTENT_BROWSER_ITEM", payload);
+                payload.file = file;
                 ImGui.text(payload.getData().toString());
                 ImGui.endDragDropSource();
             }
@@ -74,15 +74,17 @@ public class ContentBrowserPanel {
 
         ImGui.columns(1);
         ImGui.end();
+
+        ImGui.begin("Log");
+        ImGui.end();
     }
 
     public interface Payload<T> {
         T getData();
     }
 
-    static final class StringPayload implements Payload<File> {
+    protected static class StringPayload implements Payload<File> {
         File file;
-
         @Override
         public File getData() {
             return file;

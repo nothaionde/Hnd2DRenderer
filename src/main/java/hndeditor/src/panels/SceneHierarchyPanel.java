@@ -27,7 +27,8 @@ public class SceneHierarchyPanel {
     private boolean removeComponent;
     private float[] colorComponent = {1, 1, 1, 1};
     private float[] tilingFactor = {1};
-    private ContentBrowserPanel.StringPayload payload = new ContentBrowserPanel.StringPayload();
+    private Object payload = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
+//    private ContentBrowserPanel.StringPayload payload = new ContentBrowserPanel.StringPayload();
 
     public SceneHierarchyPanel() {
     }
@@ -116,12 +117,7 @@ public class SceneHierarchyPanel {
         }
 
         if (ImGui.beginPopup("AddComponent")) {
-//            displayAddComponentEntry(new CameraComponent(), "Camera");
             displayAddComponentEntry(new SpriteRendererComponent(), "Sprite Renderer");
-//            displayAddComponentEntry(new CircleRendererComponent(), "Circle Renderer");
-//            displayAddComponentEntry(new Rigidbody2DComponent(), "Rigidbody 2D");
-//            displayAddComponentEntry(new BoxCollider2DComponent(), "Box Collider 2D");
-//            displayAddComponentEntry(new CircleCollider2DComponent(), "Circle Collider 2D");
 
             ImGui.endPopup();
         }
@@ -137,13 +133,19 @@ public class SceneHierarchyPanel {
             ImGui.treePop();
         }
         if (drawComponent("Sprite Renderer", entity, entity.getComponent(SpriteRendererComponent.class))) {
+            float[] color = {entity.getComponent(SpriteRendererComponent.class).color.x,
+                    entity.getComponent(SpriteRendererComponent.class).color.y,
+                    entity.getComponent(SpriteRendererComponent.class).color.z,
+                    entity.getComponent(SpriteRendererComponent.class).color.w};
+            colorComponent = color;
             ImGui.colorEdit4("Color", colorComponent);
             entity.getComponent(SpriteRendererComponent.class).color.set(colorComponent);
             ImGui.button("Texture", 100.0f, 0.0f);
             if (ImGui.beginDragDropTarget()) {
                 payload = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
                 if (payload != null) {
-                    Texture2D texture = Texture2D.create(payload.getData().toString());
+                    ContentBrowserPanel.StringPayload path = (ContentBrowserPanel.StringPayload) payload;
+                    Texture2D texture = Texture2D.create(path.getData().toString());
                     if (texture.isLoaded()) {
                         entity.getComponent(SpriteRendererComponent.class).texture = texture;
                     }
