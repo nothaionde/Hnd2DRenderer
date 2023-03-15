@@ -13,11 +13,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The Renderer2D class provides functionality for rendering 2D graphics.
+ */
 public class Renderer2D {
-
+    /**
+     * The Render2DData class encapsulates data that is used by Renderer2D.
+     */
     private static final Render2DData data = new Render2DData();
+
+    /**
+     * The vertex offset.
+     */
     private static int vertexOffset = 0;
 
+    /**
+     * Initializes the Renderer2D.
+     */
     public static void init() {
         data.quadVertexArray = VertexArray.create();
 
@@ -63,12 +75,20 @@ public class Renderer2D {
         data.quadShader = Shader.create("assets/shaders/Renderer2D_Quad.glsl");
     }
 
+    /**
+     * Begins the 2D rendering scene.
+     *
+     * @param camera the EditorCamera to use for rendering
+     */
     public static void beginScene(EditorCamera camera) {
         data.viewProjection = camera.getViewProjection();
         data.quadShader.setUniformMat4("u_ViewProjection", data.viewProjection);
         startBatch();
     }
 
+    /**
+     * Initializes the Renderer2D.
+     */
     private static void startBatch() {
         data.quadIndexCount = 0;
         vertexOffset = 0;
@@ -76,10 +96,16 @@ public class Renderer2D {
         data.textureSlotIndex = 1;
     }
 
+    /**
+     * Ends the current scene.
+     */
     public static void endScene() {
         flush();
     }
 
+    /**
+     * This method flushes the renderer data and draws the quads.
+     */
     private static void flush() {
         if (data.quadIndexCount != 0) {
             data.quadVertexBuffer.setData(data.quadVertexBufferData);
@@ -92,11 +118,20 @@ public class Renderer2D {
         }
     }
 
+    /**
+     * This method starts a new batch of quads.
+     */
     private static void nextBatch() {
         flush();
         startBatch();
     }
 
+    /**
+     * This method draws a sprite with the given transform and sprite renderer component.
+     *
+     * @param transform the transform
+     * @param src       the sprite renderer component
+     */
     public static void drawSprite(Matrix4f transform, SpriteRendererComponent src) {
         if (src.texture != null) {
             drawQuad(transform, src.texture, src.tilingFactor, src.color);
@@ -106,6 +141,14 @@ public class Renderer2D {
 
     }
 
+    /**
+     * This method draws a quad with the given transform, texture, tiling factor, and color.
+     *
+     * @param transform    the transform
+     * @param texture      the texture
+     * @param tilingFactor the tiling factor
+     * @param color        the color
+     */
     private static void drawQuad(Matrix4f transform, Texture2D texture, float tilingFactor, Vector4f color) {
         int quadVertexCount = 4;
         float textureIndex = 0.0f; // white texture
@@ -161,12 +204,24 @@ public class Renderer2D {
         drawQuad(new Vector3f(position.x, position.y, 0.0f), size, color);
     }
 
+    /**
+     * Draws a quad with a position, size, and color.
+     *
+     * @param position the position of the quad
+     * @param size     the size of the quad
+     * @param color    the color of the quad
+     */
     public static void drawQuad(Vector3f position, Vector2f size, Vector4f color) {
-        Matrix4f transform = new Matrix4f().translate(position)
-                .scale(size.x, size.y, 1.0f, new Matrix4f());
+        Matrix4f transform = new Matrix4f().translate(position).scale(size.x, size.y, 1.0f, new Matrix4f());
         drawQuad(transform, color);
     }
 
+    /**
+     * Draws a quad with a transformation matrix and a color.
+     *
+     * @param transform the transformation matrix to apply to the quad
+     * @param color     the color of the quad
+     */
     public static void drawQuad(Matrix4f transform, Vector4f color) {
         int quadVertexCount = 4;
         float textureIndex = 0.0f; // white texture
@@ -205,21 +260,36 @@ public class Renderer2D {
     }
 
 
+    /**
+     * Resets the statistics for the number of draw calls and quad counts.
+     */
     public static void resetStats() {
         Statistics.drawCalls = 0;
         Statistics.quadCount = 0;
     }
 
-
+    /**
+     * The Statistics class contains the statistics for the number of draw calls and quad counts.
+     */
     public static class Statistics {
 
         public static int drawCalls = 0;
         public static int quadCount = 0;
 
+        /**
+         * Returns the total number of vertices.
+         *
+         * @return Total vertex count.
+         */
         public static int getTotalVertexCount() {
             return quadCount * 4;
         }
 
+        /**
+         * Returns the total number of indices.
+         *
+         * @return Total index count.
+         */
         public static int getTotalIndexCount() {
             return quadCount * 6;
         }

@@ -18,11 +18,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Represents an OpenGL shader program.
+ */
 public class OpenGLShader extends Shader {
     private String filepath;
     private HashMap<Integer, String> shaderSources;
     private int rendererID;
 
+    /**
+     * Constructs a new OpenGLShader object from a file path.
+     *
+     * @param filepath the path to the shader source file.
+     */
     public OpenGLShader(String filepath) {
         this.filepath = filepath;
         String source = readFile(filepath);
@@ -31,6 +39,11 @@ public class OpenGLShader extends Shader {
         logShaderInfo(filepath);
     }
 
+    /**
+     * Logs information about the shader to the console.
+     *
+     * @param filepath the path to the shader source file.
+     */
     private void logShaderInfo(String filepath) {
         int[] count = {0};
         int[] size = {0};
@@ -55,18 +68,19 @@ public class OpenGLShader extends Shader {
         GL20.glGetProgramiv(rendererID, GL20.GL_ACTIVE_UNIFORMS, count);
         Logger.info("Active Uniforms: " + count[0]);
 
-        for (int i = 0; i < count[0]; i++)
-        {
+        for (int i = 0; i < count[0]; i++) {
             GL20.glGetActiveUniform(rendererID, i, length, size, type, name);
             String nameFromByteBuffer = MemoryUtil.memUTF8(name);
             nameFromByteBuffer = nameFromByteBuffer.replace("\0", "");
-            Logger.info("Uniform "+ i + " Type: " + type[0] +" Name: "+ nameFromByteBuffer);
+            Logger.info("Uniform " + i + " Type: " + type[0] + " Name: " + nameFromByteBuffer);
         }
         name.clear();
     }
 
+    /**
+     * Compiles and links the shaders to the shader program.
+     */
     private void compileAndLinkShaders() {
-        // TODO add error checks for compiling and linking shaders
         int program = GL20.glCreateProgram();
         List<Integer> shaderObjects = new ArrayList<>();
         shaderSources.forEach((type, source) -> {
@@ -96,6 +110,12 @@ public class OpenGLShader extends Shader {
         rendererID = program;
     }
 
+    /**
+     * Preprocesses the shader source code and returns a map of shader types and their sources.
+     *
+     * @param source the source code to preprocess
+     * @return a map of shader types and their sources
+     */
     private HashMap<Integer, String> preProcess(String source) {
         HashMap<Integer, String> shaderSources = new HashMap<>();
 
@@ -124,13 +144,12 @@ public class OpenGLShader extends Shader {
     }
 
     /**
-     * Searches the string for the first character that does not match any of the characters specified in its arguments.
-     * The search only includes characters at or after position pos, ignoring any possible occurrences before that character.
+     * Finds the position of the first character in a string that is not in another string.
      *
-     * @param in    String to be used in the search.
-     * @param notOf String to be used in the search.
-     * @param from  Position of the first character in the string to be considered in the search.
-     * @return The position of the first character that does not match. If no such characters are found, the function returns -1;
+     * @param in    the string to search
+     * @param notOf the string to exclude from the search
+     * @param from  the starting position of the search
+     * @return the position of the first character that is not in the exclude string, or -1 if not found
      */
     private int findFirstNotOf(String in, String notOf, int from) {
         for (int i = from; i < in.length(); i++) {
@@ -141,6 +160,12 @@ public class OpenGLShader extends Shader {
         return -1;
     }
 
+    /**
+     * Determines the OpenGL shader type based on a string representation.
+     *
+     * @param type the string representation of the shader type
+     * @return the OpenGL shader type
+     */
     private int shaderTypeFromString(String type) {
         if (type.equals("vertex")) {
             return GL20.GL_VERTEX_SHADER;
@@ -152,6 +177,12 @@ public class OpenGLShader extends Shader {
         return 0;
     }
 
+    /**
+     * Reads the contents of a file and returns them as a string.
+     *
+     * @param filepath the path to the file to read
+     * @return the contents of the file as a string
+     */
     private String readFile(String filepath) {
         String result = null;
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
@@ -173,11 +204,20 @@ public class OpenGLShader extends Shader {
         return result;
     }
 
+    /**
+     * Binds this shader program for use.
+     */
     @Override
     public void bind() {
         GL20.glUseProgram(rendererID);
     }
 
+    /**
+     * Sets the value of a matrix uniform in the shader.
+     *
+     * @param name   the name of the uniform
+     * @param matrix the matrix to set the uniform to
+     */
     @Override
     public void setUniformMat4(String name, Matrix4f matrix) {
         int location = GL20.glGetUniformLocation(rendererID, name);
@@ -186,17 +226,35 @@ public class OpenGLShader extends Shader {
         GL20.glUniformMatrix4fv(location, false, floatBuffer);
     }
 
+    /**
+     * Uploads an integer array to a uniform in the shader.
+     *
+     * @param name   the name of the uniform
+     * @param values the integer array to upload
+     */
     @Override
     public void uploadUniformIntArray(String name, int[] values) {
         int location = GL20.glGetUniformLocation(rendererID, name);
         GL20.glUniform1iv(location, values);
     }
 
+    /**
+     * Sets the value of a Vector4f uniform in the shader.
+     *
+     * @param name  the name of the uniform
+     * @param value the value to set the uniform to
+     */
     @Override
     public void setFloat4(String name, Vector4f value) {
         uploadUniformFloat4(name, value);
     }
 
+    /**
+     * Uploads a Vector4f to a uniform in the shader.
+     *
+     * @param name  the name of the uniform
+     * @param value the Vector4f to upload
+     */
     private void uploadUniformFloat4(String name, Vector4f value) {
         int location = GL20.glGetUniformLocation(rendererID, name);
         GL20.glUniform4f(location, value.x, value.y, value.z, value.w);

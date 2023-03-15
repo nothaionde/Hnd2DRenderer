@@ -10,19 +10,44 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
+/**
+ * A panel for browsing the content of a directory and displaying its contents as icons with names.
+ */
 public class ContentBrowserPanel {
+    /**
+     * The icon to display for directories.
+     */
     private final Texture2D directoryIcon;
+    /**
+     * The icon to display for files.
+     */
     private final Texture2D fileIcon;
+    /**
+     * The current directory being displayed.
+     */
     private Path currentDirectory;
-    private final Path assetPath = Paths.get("assets"); // "assets"
+    /**
+     * The path to the assets directory.
+     */
+    private final Path assetPath = Paths.get("assets");
+
+    /**
+     * The payload used for drag and drop functionality.
+     */
     protected static final StringPayload payload = new StringPayload();
 
+    /**
+     * Constructs a new {@code ContentBrowserPanel}.
+     */
     public ContentBrowserPanel() {
         currentDirectory = assetPath;
         directoryIcon = Texture2D.create("assets/logo/contentbrowser/DirectoryIcon.png");
         fileIcon = Texture2D.create("assets/logo/contentbrowser/FileIcon.png");
     }
 
+    /**
+     * Renders the panel's GUI using ImGui.
+     */
     public void onImGuiRender() {
         ImGui.begin("Content Browser");
         if (currentDirectory != assetPath) {
@@ -79,12 +104,24 @@ public class ContentBrowserPanel {
         ImGui.end();
     }
 
+    /**
+     * The payload interface for drag and drop functionality.
+     *
+     * @param <T> The type of data being carried by the payload.
+     */
     public interface Payload<T> {
         T getData();
     }
 
+    /**
+     * The payload used for carrying file data during drag and drop.
+     */
     protected static class StringPayload implements Payload<File> {
+        /**
+         * The file being carried by the payload.
+         */
         File file;
+
         @Override
         public File getData() {
             return file;

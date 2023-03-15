@@ -1,11 +1,20 @@
 package hnd.src.core;
 
-
 /**
- * Application specification class
+ * This class represents an application specification, which contains information about an application
+ * such as its name, working directory, and command line arguments.
  */
 public class ApplicationSpecification {
-	public String name = "Hnd Application";
-	public String workingDirectory;
-	public String[] commandLineArgs;
+    /**
+     * The name of the application. Default value is "Hnd Application".
+     */
+    public String name = "Hnd Application";
+    /**
+     * The working directory of the application.
+     */
+    public String workingDirectory;
+    /**
+     * The command line arguments to be passed to the application.
+     */
+    public String[] commandLineArgs;
 }

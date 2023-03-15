@@ -19,6 +19,11 @@ import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
 import org.joml.Vector3f;
 
+/**
+ * This class represents the scene hierarchy panel in the HND Editor application.
+ * It is responsible for rendering and managing the scene hierarchy view,
+ * as well as allowing the user to select and edit entities and their components.
+ */
 public class SceneHierarchyPanel {
     private Scene context;
     private Entity selectionContext;
@@ -28,16 +33,26 @@ public class SceneHierarchyPanel {
     private float[] colorComponent = {1, 1, 1, 1};
     private float[] tilingFactor = {1};
     private Object payload = ImGui.acceptDragDropPayload("CONTENT_BROWSER_ITEM");
-//    private ContentBrowserPanel.StringPayload payload = new ContentBrowserPanel.StringPayload();
 
+    /**
+     * Creates a new SceneHierarchyPanel instance.
+     */
     public SceneHierarchyPanel() {
     }
 
+    /**
+     * Sets the scene that this SceneHierarchyPanel instance should be associated with.
+     *
+     * @param context the scene to associate this panel with
+     */
     public void setContext(Scene context) {
         this.context = context;
         selectionContext = null;
     }
 
+    /**
+     * Renders the scene hierarchy panel and its associated properties panel using ImGui.
+     */
     public void onImGuiRender() {
         ImGui.begin("Scene Hierarchy");
         if (context != null) {
@@ -66,7 +81,12 @@ public class SceneHierarchyPanel {
         ImGui.end();
     }
 
-
+    /**
+     * Draws an entity node in the scene hierarchy panel.
+     *
+     * @param uuid   the UUID of the entity to draw
+     * @param entity the entity to draw
+     */
     private void drawEntityNode(UUID uuid, Entity entity) {
         String tag = entity.getComponent(TagComponent.class).tag;
 
@@ -99,6 +119,11 @@ public class SceneHierarchyPanel {
         }
     }
 
+    /**
+     * Draws the components of an entity in the properties panel.
+     *
+     * @param entity the entity whose components to draw
+     */
     private void drawComponents(Entity entity) {
         if (entity.hasComponent(TagComponent.class)) {
             String tag = entity.getComponent(TagComponent.class).tag;
@@ -133,10 +158,7 @@ public class SceneHierarchyPanel {
             ImGui.treePop();
         }
         if (drawComponent("Sprite Renderer", entity, entity.getComponent(SpriteRendererComponent.class))) {
-            float[] color = {entity.getComponent(SpriteRendererComponent.class).color.x,
-                    entity.getComponent(SpriteRendererComponent.class).color.y,
-                    entity.getComponent(SpriteRendererComponent.class).color.z,
-                    entity.getComponent(SpriteRendererComponent.class).color.w};
+            float[] color = {entity.getComponent(SpriteRendererComponent.class).color.x, entity.getComponent(SpriteRendererComponent.class).color.y, entity.getComponent(SpriteRendererComponent.class).color.z, entity.getComponent(SpriteRendererComponent.class).color.w};
             colorComponent = color;
             ImGui.colorEdit4("Color", colorComponent);
             entity.getComponent(SpriteRendererComponent.class).color.set(colorComponent);
@@ -162,6 +184,14 @@ public class SceneHierarchyPanel {
         }
     }
 
+    /**
+     * Draws a vector3f control in the ImGui window.
+     *
+     * @param label      the label to display next to the control
+     * @param values     the values of the vector3f to edit
+     * @param resetValue the value to reset the vector3f to when the user double-clicks on it
+     * @return true if the vector3f control was edited, false otherwise
+     */
     private void drawVec3Control(String label, Vector3f values, float resetValue) {
         float columnWidth = 100.0f;
 
@@ -233,10 +263,17 @@ public class SceneHierarchyPanel {
         ImGui.popID();
     }
 
+    /**
+     * Draws a component in the properties panel and allows the user to edit its properties.
+     *
+     * @param name      the name of the component to draw
+     * @param entity    the entity containing the component to draw
+     * @param component the component to draw
+     * @param <T>       the type of the component to draw
+     * @return true if the component was edited, false otherwise
+     */
     private <T extends Component> boolean drawComponent(String name, Entity entity, T component) {
-        int treeNodeFlags = ImGuiTreeNodeFlags.DefaultOpen
-                | ImGuiTreeNodeFlags.Framed | ImGuiTreeNodeFlags.SpanAvailWidth
-                | ImGuiTreeNodeFlags.AllowItemOverlap | ImGuiTreeNodeFlags.FramePadding;
+        int treeNodeFlags = ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.Framed | ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.AllowItemOverlap | ImGuiTreeNodeFlags.FramePadding;
         if (component != null) {
             if (entity.hasComponent(component.getClass())) {
                 ImVec2 contentRegionAvailable = ImGui.getContentRegionAvail();
@@ -264,6 +301,13 @@ public class SceneHierarchyPanel {
         return false;
     }
 
+    /**
+     * Displays an entry in the "AddComponent" popup menu for the given component type.
+     *
+     * @param component the component to display an entry for
+     * @param entryName the label to display for the entry
+     * @param <T>       the type of the component to display an entry for
+     */
     private <T extends Component> void displayAddComponentEntry(T component, String entryName) {
         if (!selectionContext.hasComponent(component.getClass())) {
             if (ImGui.menuItem(entryName)) {
@@ -272,7 +316,6 @@ public class SceneHierarchyPanel {
             }
         }
     }
-
 
     public Entity getSelectedEntity() {
         return selectionContext;

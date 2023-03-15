@@ -1,14 +1,17 @@
+
 package hnd.src.platform.opengl;
 
 import hnd.src.core.Logger;
 import hnd.src.renderer.framebuffer.Framebuffer;
 import hnd.src.renderer.framebuffer.FramebufferSpecification;
-import org.lwjgl.opengl.*;
-import org.lwjgl.system.MemoryStack;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL42;
+import org.lwjgl.opengl.GL45;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
+/**
+ * An implementation of the {@link Framebuffer} class using OpenGL.
+ */
 public class OpenGLFramebuffer extends Framebuffer {
 
     private static final int TOTAL_TEXTURES = 4;
@@ -17,15 +20,26 @@ public class OpenGLFramebuffer extends Framebuffer {
     private final int[] depthAttachments = {0};
     private final FramebufferSpecification specification;
 
+    /**
+     * Constructor for the OpenGLFramebuffer class.
+     *
+     * @param specification The specification for this framebuffer.
+     */
     public OpenGLFramebuffer(FramebufferSpecification specification) {
         this.specification = specification;
         invalidate();
     }
 
+    /**
+     * Disposes of the OpenGLFramebuffer object and its associated resources.
+     */
     private void dispose() {
         GL30.glDeleteFramebuffers(rendererID);
     }
 
+    /**
+     * Invalidates the current framebuffer object and creates a new one with the given specifications.
+     */
     private void invalidate() {
         GL45.glCreateFramebuffers(rendererID);
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, rendererID[0]);
@@ -52,26 +66,48 @@ public class OpenGLFramebuffer extends Framebuffer {
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
     }
 
+    /**
+     * Binds this framebuffer object.
+     */
     @Override
     public void bind() {
         GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, rendererID[0]);
     }
 
+    /**
+     * Unbinds this framebuffer object.
+     */
     @Override
     public void unbind() {
         GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
     }
 
+    /**
+     * Returns the specification for this framebuffer object.
+     *
+     * @return The specification for this framebuffer object.
+     */
     @Override
     public FramebufferSpecification getSpecification() {
         return specification;
     }
 
+    /**
+     * Returns the renderer ID of the color attachment.
+     *
+     * @return The renderer ID of the color attachment.
+     */
     @Override
     public int getColorAttachmentRendererID() {
         return colorAttachments[0];
     }
 
+    /**
+     * Resizes the framebuffer to the given width and height.
+     *
+     * @param width  The new width of the framebuffer.
+     * @param height The new height of the framebuffer.
+     */
     @Override
     public void resize(int width, int height) {
         specification.width = width;

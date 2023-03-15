@@ -14,58 +14,81 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.util.Objects;
 
-
 /**
- * Windows platform depended main window initialization and creating.
+ * A window implementation using the GLFW library for the Windows platform.
  */
 public class GLFWWindow extends Window {
 
+    /**
+     * The pointer to the GLFW window.
+     */
     private static long windowPtr;
+
+    /**
+     * The graphics context associated with the GLFW window.
+     */
     private static GraphicsContext context;
 
+    /**
+     * Creates a new GLFW window with the specified properties.
+     *
+     * @param windowProps The properties of the window.
+     */
     public GLFWWindow(WindowProps windowProps) {
         init(windowProps);
     }
 
     /**
-     * GLFW error callback handler wrapper.
+     * Handles GLFW error callbacks.
      *
-     * @param error       the error code
-     * @param description a pointer to a UTF-8 encoded string describing the error.
+     * @param error       The error code.
+     * @param description The description of the error.
      */
     private static void glfwErrorCallback(int error, long description) {
         Logger.error("Error code: " + error + ", msg: " + MemoryUtil.memUTF8(description));
     }
 
     /**
-     * Creates a window and its associated OpenGL context.
-     * How the window and its context should be created are specified with window hints
+     * Initializes the GLFW window with the specified properties.
      *
-     * @param windowProps {@link hnd.src.core.Window.WindowProps} window properties.
+     * @param windowProps The properties of the window.
      */
     private static void init(WindowProps windowProps) {
         WindowData.title = windowProps.title;
         WindowData.width = windowProps.width;
         WindowData.height = windowProps.height;
         Logger.info("Creating window: " + windowProps.title + " (" + windowProps.width + ", " + windowProps.height + ")");
+
+        // Initialize GLFW
         if (!GLFW.glfwInit()) {
             Logger.error("Couldn't initialize GLFW!");
         }
+
+        // Set the GLFW error callback
         GLFW.glfwSetErrorCallback(GLFWWindow::glfwErrorCallback);
+
+        // Set the OpenGL debug context hint if in debug mode
         if (Constants.DEBUG) {
             if (Renderer.getAPI() == RendererAPI.API.OPENGL) {
                 GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
             }
         }
+
+        // Create the GLFW window and graphics context
         windowPtr = GLFW.glfwCreateWindow(windowProps.width, windowProps.height, WindowData.title, 0L, 0L);
         context = GraphicsContext.create(windowPtr);
+        assert context != null;
         context.init();
+
+        // Enable VSync by default
         setVSync(true);
+
+        // Set the GLFW event callbacks
         setGLFWCallbacks();
     }
 
     /**
-     * Sets the callbacks for the specified window.
+     * Sets the GLFW event callbacks.
      */
     private static void setGLFWCallbacks() {
         GLFW.glfwSetWindowSizeCallback(windowPtr, ApplicationEvent::windowSizeCallback);
@@ -74,14 +97,12 @@ public class GLFWWindow extends Window {
         GLFW.glfwSetMouseButtonCallback(windowPtr, MouseEvent::mouseButtonCallbackEvent);
         GLFW.glfwSetScrollCallback(windowPtr, MouseEvent::mouseScrollCallbackEvent);
         GLFW.glfwSetCursorPosCallback(windowPtr, MouseEvent::mousePosCallbackEvent);
-
     }
 
     /**
-     * Sets vsync for the GLFW window.
-     * Better to keep VSync true to not overload system resources.
+     * Sets whether VSync is enabled or disabled.
      *
-     * @param enabled true to set VSync
+     * @param enabled Whether VSync is enabled.
      */
     private static void setVSync(boolean enabled) {
         if (enabled) {
@@ -93,7 +114,7 @@ public class GLFWWindow extends Window {
     }
 
     /**
-     * Swap buffers and update GLFW poll events
+     * Updates the GLFW window and swaps the graphics buffers.
      */
     @Override
     public void update() {
@@ -102,9 +123,9 @@ public class GLFWWindow extends Window {
     }
 
     /**
-     * Return GLFW window pointer
+     * Gets the native window pointer for the GLFW window.
      *
-     * @return GLFW window pointer
+     * @return The native window pointer for the GLFW window.
      */
     @Override
     public long getNativeWindow() {
@@ -112,9 +133,9 @@ public class GLFWWindow extends Window {
     }
 
     /**
-     * Returns windows width in int
+     * Gets the width of the GLFW window.
      *
-     * @return window width in int
+     * @return The width of the GLFW window.
      */
     @Override
     public int getWidth() {
@@ -122,15 +143,18 @@ public class GLFWWindow extends Window {
     }
 
     /**
-     * Returns windows height in int
+     * Gets the height of the GLFW window.
      *
-     * @return window height in int
+     * @return The height of the GLFW window.
      */
     @Override
     public int getHeight() {
         return WindowData.height;
     }
 
+    /**
+     * Disposes of the GLFW window and frees up any associated resources.
+     */
     @Override
     public void dispose() {
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
@@ -138,14 +162,33 @@ public class GLFWWindow extends Window {
     }
 
     /**
-     * Window properties data. Title, width, height, vsync
+     * Represents the data for the GLFW window.
      */
     public static class WindowData {
+
+        /**
+         * The title of the GLFW window.
+         */
         public static String title;
+
+        /**
+         * The width of the GLFW window.
+         */
         public static int width;
+
+        /**
+         * The height of the GLFW window.
+         */
         public static int height;
+
+        /**
+         * Whether or not V-Sync is enabled for the GLFW window.
+         */
         public static boolean vSync;
 
+        /**
+         * Private constructor to prevent instantiation.
+         */
         private WindowData() {
         }
     }

@@ -4,33 +4,79 @@ package hnd.src.core;
 import hnd.src.platform.windows.GLFWWindow;
 
 /**
- * Abstract class that contains main window creation and update logic.
+ * An abstract class representing a window in the graphics engine.
  */
 public abstract class Window {
 
-	public static Window create(WindowProps windowProps) {
-		return new GLFWWindow(windowProps);
-	}
+    /**
+     * Creates a new window with the given properties.
+     *
+     * @param windowProps The properties of the window to create.
+     * @return A new instance of a Window.
+     */
+    public static Window create(WindowProps windowProps) {
+        return new GLFWWindow(windowProps);
+    }
 
-	public abstract void update();
+    /**
+     * Updates the window, for example by rendering a new frame.
+     */
+    public abstract void update();
 
-	public abstract long getNativeWindow();
+    /**
+     * Gets the native window handle of the window.
+     *
+     * @return The native window handle of the window.
+     */
+    public abstract long getNativeWindow();
 
-	public abstract int getWidth();
+    /**
+     * Gets the width of the window.
+     *
+     * @return The width of the window in pixels.
+     */
+    public abstract int getWidth();
 
-	public abstract int getHeight();
+    /**
+     * Gets the height of the window.
+     *
+     * @return The height of the window in pixels.
+     */
+    public abstract int getHeight();
 
-	public abstract void dispose();
+    /**
+     * Disposes of the window and any associated resources.
+     */
+    public abstract void dispose();
 
 
-	public static class WindowProps {
-		public String title;
-		public int width = 1600;
-		public int height = 900;
+    /**
+     * A class representing the properties of a window.
+     */
+    public static class WindowProps {
+        /**
+         * The title of the window.
+         */
+        public String title;
 
-		public WindowProps(String title) {
-			this.title = title;
-		}
-	}
+        /**
+         * The default width of the window.
+         */
+        public int width = 1600;
+
+        /**
+         * The default height of the window.
+         */
+        public int height = 900;
+
+        /**
+         * Creates a new instance of WindowProps with the given title.
+         *
+         * @param title The title of the window.
+         */
+        public WindowProps(String title) {
+            this.title = title;
+        }
+    }
 
 }

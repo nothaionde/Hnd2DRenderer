@@ -4,38 +4,87 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.nio.FloatBuffer;
-
+/**
+ * Represents a vertex with position, color, texture coordinates, and a texture ID.
+ */
 public class Vertex {
-	public Vector3f position = new Vector3f();
-	public Vector4f color = new Vector4f();
-	public Vector2f texCoords = new Vector2f();
-	public float texID;
+    /**
+     * The position of the vertex.
+     */
+    public Vector3f position = new Vector3f();
 
-	// Size of Vertex buffer: position = 3 + color = 4 + texCoords = 2 + texID = 1;
-	private final int size = 10 * Float.BYTES;
+    /**
+     * The color of the vertex.
+     */
+    public Vector4f color = new Vector4f();
 
-	public int size() {
-		return size;
-	}
+    /**
+     * The texture coordinates of the vertex.
+     */
+    public Vector2f texCoords = new Vector2f();
 
-	public int getPositionOffset() {
-		return 0;
-	}
+    /**
+     * The ID of the texture for the vertex.
+     */
+    public float texID;
 
-	public int getColorOffset() {
-		return 12;
-	}
+    /**
+     * The size of the vertex in bytes.
+     * Size of Vertex buffer: position 3 + color 4 + texCoords 2 + texID 1.
+     */
+    private final int size = 10 * Float.BYTES;
 
-	public int getTexCoordsOffset() {
-		return 28;
-	}
+    /**
+     * Returns the size of the vertex in bytes.
+     *
+     * @return the size of the vertex in bytes
+     */
+    public int size() {
+        return size;
+    }
 
-	public int getTexIDOffset() {
-		return 36;
-	}
+    /**
+     * Returns the offset of the position in the vertex buffer.
+     *
+     * @return the offset of the position in the vertex buffer
+     */
+    public int getPositionOffset() {
+        return 0;
+    }
 
-	public float[] asFloatArray() {
-		return new float[]{position.x, position.y, position.z, color.x, color.y, color.z, color.w, texCoords.x, texCoords.y, texID};
-	}
+    /**
+     * Returns the offset of the color in the vertex buffer.
+     *
+     * @return the offset of the color in the vertex buffer
+     */
+    public int getColorOffset() {
+        return 12;
+    }
+
+    /**
+     * Returns the offset of the texture coordinates in the vertex buffer.
+     *
+     * @return the offset of the texture coordinates in the vertex buffer
+     */
+    public int getTexCoordsOffset() {
+        return 28;
+    }
+
+    /**
+     * Returns the offset of the texture ID in the vertex buffer.
+     *
+     * @return the offset of the texture ID in the vertex buffer
+     */
+    public int getTexIDOffset() {
+        return 36;
+    }
+
+    /**
+     * Returns the vertex as an array of floats.
+     *
+     * @return the vertex as an array of floats
+     */
+    public float[] asFloatArray() {
+        return new float[]{position.x, position.y, position.z, color.x, color.y, color.z, color.w, texCoords.x, texCoords.y, texID};
+    }
 }
